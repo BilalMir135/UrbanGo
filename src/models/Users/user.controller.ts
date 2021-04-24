@@ -6,16 +6,26 @@ import {
   Put,
   Get,
   Delete,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import {
   ApiCreatedResponse,
   ApiOkResponse,
   ApiBadRequestResponse,
   ApiTags,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 
 import { UserService } from './user.service';
-import { CreateUserDto, UserResponseDto, UpdateUserDto } from './dto';
+import {
+  CreateUserDto,
+  UserResponseDto,
+  UpdateUserDto,
+  LoginUserDto,
+  LoginResponseDto,
+} from './dto';
+import { AuthGuard } from '../../common/guards/auth.guard';
 
 @ApiTags('Users')
 @Controller('user')
@@ -31,8 +41,11 @@ export class UserController {
 
   @ApiOkResponse({ type: UserResponseDto })
   @ApiBadRequestResponse({ description: 'Invalid Values' })
-  @Put(':id')
-  async updateUser(@Param('id') id: string, @Body() updateUser: UpdateUserDto) {
+  @ApiBearerAuth()
+  @UseGuards(new AuthGuard('user'))
+  @Put()
+  async updateUser(@Req() req: any, @Body() updateUser: UpdateUserDto) {
+    const id = req.user.id;
     return await this.userService.updateUser(id, updateUser);
   }
 
@@ -42,9 +55,17 @@ export class UserController {
     return await this.userService.getAllUsers();
   }
 
-  //@ApiOkResponse({ type: UserResponseDto, isArray: true })
+  @ApiOkResponse({ type: UserResponseDto })
+  @ApiBadRequestResponse({ description: 'Invalid User' })
   @Delete(':id')
   async deleteUser(@Param('id') id: string) {
     return await this.userService.deleteUser(id);
+  }
+
+  @ApiOkResponse({ type: LoginResponseDto })
+  @ApiBadRequestResponse({ description: 'Invalid Credentials' })
+  @Post('/login')
+  async loginUser(@Body() loginUser: LoginUserDto) {
+    return await this.userService.loginUser(loginUser);
   }
 }

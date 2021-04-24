@@ -6,7 +6,7 @@ import { userTypes } from './user.constant';
 export type UserDocument = User & Document;
 
 @Schema({ timestamps: true, versionKey: false })
-export class User {
+class User {
   @Prop({ required: true })
   firstName: string;
 

@@ -5,6 +5,7 @@ export const SetupSwagger = (app) => {
     .setTitle('Urban Go')
     .setDescription('Find out best places for you')
     .setVersion('1.0')
+    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
