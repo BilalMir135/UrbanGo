@@ -12,7 +12,12 @@ import { FILE_STORE_BASE_NAME } from './common/constants';
   imports: [
     ...Features,
     ConfigModule.forRoot({ envFilePath: '.env' }),
-    MongooseModule.forRoot(process.env.MONGO_URI),
+    MongooseModule.forRoot(process.env.MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      useCreateIndex: true,
+      useFindAndModify: false,
+    }),
     MulterModule.register({
       dest: FILE_STORE_BASE_NAME,
     }),
